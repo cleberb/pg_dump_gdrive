@@ -147,7 +147,8 @@ Adequar as permissões do diretório e arquivos:
 
 Copiar arquivo de configuração base:
 
-*IMPORTANTE:* Pode-se utilizar qualquer nome. Recomenda ser algo identifique o servidor ou base de dados.
+> **Note**
+> Pode-se utilizar qualquer nome. Recomenda ser algo identifique o servidor ou base de dados.
 
 ```console
 # cp -a /etc/pg_dump_gdrive/{template.conf,<FILE>.conf}
@@ -233,7 +234,8 @@ EOF
 
 3. Agendamento de backup:
 
-   **IMPORTANTE:** Caso a base a ser restaurada seja muito grande, o agendamento de backup no crontab deve ser desativado, para que não seja processado backup durante a restauração.
+   > **Warning**
+   > Caso a base a ser restaurada seja muito grande, o agendamento de backup no crontab deve ser desativado, para que não seja processado backup durante a restauração.
 
    ```console
    # mv /etc/cron.d/pg_dump_gdrive{,.disabled}
@@ -371,7 +373,8 @@ EOF
 
 10. Agendamento de backup:
 
-   **IMPORTANTE:** Caso tenha desativado o agendamento do backup no crontab, deve-se ativá-lo novamente:
+   > **Warning**
+   > Caso tenha desativado o agendamento do backup no crontab, deve-se ativá-lo novamente.
 
    ```console
    # mv /etc/cron.d/pg_dump_gdrive{.disabled,}
