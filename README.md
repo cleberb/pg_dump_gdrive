@@ -6,19 +6,19 @@ O objetivo desse script é realizar o backup lógico de instâncias PostgreSQL d
 
    * Backup anual no dia 01 de Janeiro.
    * Backup mensal no dia 01 dia dos demais meses.
-   * Backup semanal todo domíngo.
+   * Backup semanal todo domingo.
    * Backup diário.
 
 2. Tempo de retenção dos backups:
 
    * Localmente, apenas o último backup processado.
-   * No Google Drive, com definições personalizadas de configurações. Padrão: (6 diarios, 4 semanais, 11 mensais, 5 anuais).
+   * No Google Drive, com definições personalizadas de configurações. Padrão: (6 diários, 4 semanais, 11 mensais, 5 anuais).
 
 3. Arquivos de backup que serão gerados:
 
    * Arquivos de configuração `postgresql.conf` e `pg_hba.conf`.
    * Objetos Globais (roles e tablespaces).
-   * Bancos de dados individuais, para facilitar a restauração espefícida de uma base.
+   * Bancos de dados individuais, para facilitar a restauração específica de uma base.
 
 ## Configurações iniciais
 
@@ -41,9 +41,9 @@ O objetivo desse script é realizar o backup lógico de instâncias PostgreSQL d
 
    ![Root Folder ID](assets/img/gdrive_root_folder_id.jpg?raw=true "Root Folder ID")
 
-### Obter configurações do ```rclone```
+### Obter configurações do `rclone`
 
-1. Instale o rclone na sua maquina administrativa:
+1. Instale o `rclone` na sua máquina administrativa:
 
    > **Note**
    > Mais detalhes do **rclone**: https://rclone.org/install/
@@ -53,7 +53,7 @@ O objetivo desse script é realizar o backup lógico de instâncias PostgreSQL d
    # curl https://rclone.org/install.sh | sudo bash
    ```
 
-2. Configurar o rclone:
+2. Configurar o `rclone`:
 
    > **Note**
    > Mais detalhes de configuração do Google Drive: https://rclone.org/drive/
@@ -74,11 +74,11 @@ O objetivo desse script é realizar o backup lógico de instâncias PostgreSQL d
                --all
       ```
 
-   2.2. Irá abrir o browser automaticamente, para que seja autorizado o acesso da aplicação rclone ao Goodle Drive:
+   2.2. Irá abrir o browser automaticamente, para que seja autorizado o acesso da aplicação `rclone` ao Google Drive:
 
       ![Google Drive Authorization](assets/img/gdrive_authorization.jpg?raw=true "Google Drive Authorization")
 
-      Retorne ao console, será apresentado a configuração do rclone e o parâmetro mais importante, o **token** de autenticação.
+      Retorne ao console, será apresentado a configuração do `rclone` e o parâmetro mais importante, o **token** de autenticação.
 
       Copie e armazene todo conteúdo do parâmetro **token** em um lugar seguro, pois este será utilizado posteriormente para configurar o script de backup:
 
@@ -96,7 +96,7 @@ O objetivo desse script é realizar o backup lógico de instâncias PostgreSQL d
       --------------------
       ```
 
-   2.3. Com o **token** armazenado em um lugar segudo, pode-se excluir a configuração criada acima:
+   2.3. Com o **token** armazenado em um lugar seguro, pode-se excluir a configuração criada acima:
 
       ```console
       # rclone config delete TEMPDRIVE
@@ -115,7 +115,7 @@ O objetivo desse script é realizar o backup lógico de instâncias PostgreSQL d
 # apt install sudo git sendemail pigz
 ```
 
-Instalar versão mais recento do rclone:
+Instalar versão mais recente do `rclone`:
 
 ```console
 # wget https://downloads.rclone.org/v1.58.1/rclone-v1.58.1-linux-amd64.deb
@@ -147,19 +147,66 @@ Adequar as permissões do diretório e arquivos:
 
 Copiar arquivo de configuração base:
 
-*IMPORTANTE:* Pode-se utilizar qualquer nome. Recomenda ser algo que idêntifique o servidor ou base de dados.
+*IMPORTANTE:* Pode-se utilizar qualquer nome. Recomenda ser algo identifique o servidor ou base de dados.
 
 ```console
 # cp -a /etc/pg_dump_gdrive/{template.conf,<FILE>.conf}
 ```
 
 > **Note**
-> O script subentende que o sistema já possue um servidor de email configurado no endereço local, listado em **```localhost:25```**.
+> O script subentende que o sistema já possui um servidor de email configurado no endereço local, listado em **```localhost:25```**.
 
 Abaixo os valores padrões de **template.conf**, os comentários são autoexplicativos. Altere com os valores ambiente de produção, com atenção para os parâmetros **RCLONE_TOKEN** e **RCLONE_ROOT_FOLDER_ID**:
 
-```bash:template.conf
+```bash
+# Nome da empresa
+COMPANY="Cleberson Batista"
 
+# Site da empresa
+COMPANY_SITE="https://www.linkedin.com/in/cleberson-batista/"
+
+# E-mail de origem
+MAIL_SOURCE="email@empresa.com.br"
+
+# E-mail de destino
+# Multiplos e-mails, separado por espaço
+MAIL_TARGET="email@empresa.com.br email2@empresa.com.br"
+
+# Identificação/Label do backup
+BACKUP_LABEL='dbteste'
+
+# Diretório local de processamento do backup
+BACKUP_DIR='/mnt/pgbackup'
+
+# Tipo de formato de saída do processamento do pg_dump para bases individuais
+# Valores válidos: "[plain|directory]"
+BACKUP_DUMP_TYPE='plain'
+
+# Configurações do rclone para o google drive
+# Mais detalhes em:
+#   - https://rclone.org/docs/#config-file
+#   - https://rclone.org/drive/
+RCLONE_TOKEN='{"access_token":"ya29.A0ARrd........XbIm-QRM3j4Dbcvzd............nV8","token_type":"Bearer","refresh_token":"1//0hNxVKkh-........................ISqVT8","expiry":"2022-04-13T18:27:35.548394904-03:00"}'
+RCLONE_ROOT_FOLDER_ID='1DKE.................K5NrnO0'
+RCLONE_TEAM_DRIVE=''
+
+# Retenção de backups
+# Diários
+BACKUP_RETENTION_DAILY=6
+# Semanais
+BACKUP_RETENTION_WEEKLY=4
+# Mensais
+BACKUP_RETENTION_MONTHLY=11
+# Anuais
+BACKUP_RETENTION_YEARLY=5
+
+# Valor em porcetagem de uso de núcleos de processadores pelo pg_dump
+# IMPORTANTE: Não acrescentar string "%", apenas valores inteiros.
+PERCENT_CORES_PGDUMP=80
+
+# Valor em porcetagem de uso de núcleos de processadores pelo compactador PIGZ
+# IMPORTANTE: Não acrescentar string "%", apenas valores inteiros.
+PERCENT_CORES_PIGZ=80
 ```
 
 ### Configuração do crontab
@@ -192,13 +239,13 @@ EOF
    # mv /etc/cron.d/pg_dump_gdrive{,.disabled}
    ```
 
-4. Acesso o Google Drive via browser e veja os nomes completos ou a string de data que representa os arquivos que deseja realizar download para restaurar:
+4. Acessar o Google Drive via browser e ver os nomes completos ou a string de data que representa os arquivos que deseja realizar download para restaurar:
 
    ```console
    # pg_dump_gdrive --config file.conf --download daily/*20220621162701*
    ```
 
-5. Acessar o diretório de processamento de backups definido para o script **pg_dump_gdrive**:
+5. Acessar o diretório de processamento de backups definido para o script `pg_dump_gdrive`:
 
    ```console
    # cd <diretory>
@@ -213,7 +260,7 @@ EOF
    Transfira os arquivos para os devidos locais de configuração.
 
    > **Warning**
-   > Caso tenha alterado os locais, certifique que todas as definições do caminho de arquivos `postgresql.conf` estejam com os definições adequadas.
+   > Caso tenha alterado os locais, certifique que todas as definições do caminho de arquivos `postgresql.conf` estejam com as definições adequadas.
 
    ```console
    # mv .../postgresql.conf <Diretório atual da configuração>
@@ -246,10 +293,10 @@ EOF
    ```console
    # grep '^CREATE TABLESPACE ' backup_<LABEL>_globals_<DATE>.sql
 
-   CREATE TABLESPACE tablespaceteste OWNER postgres LOCATION '/pg/data';
+   CREATE TABLESPACE tablespace teste OWNER postgres LOCATION '/pg/data';
    ```
 
-   No **exemplo** acima é possível identicar o caminho do TABLESPACE `/pg/data`. Certifique que este caminho esteja criado e devidamente permissionado:
+   No **exemplo** acima é possível identificar o caminho do TABLESPACE `/pg/data`. Certifique que este caminho esteja criado e devidamente permissionado:
 
    ```console
    # mkdir -p -m 750 /pg/data
@@ -265,7 +312,7 @@ EOF
    Processar o restore:
 
    > **Note**
-   > Remover do arquivo de dump o `DROP ROLE` e `CREATE ROLE` do usuário `postgres` oara que não seja apresentado mensagem de erro informando que role já existe.
+   > Remover do arquivo de dump o `DROP ROLE` e `CREATE ROLE` do usuário `postgres` para que não seja apresentado mensagem de erro informando que role já existe.
 
    ```console
    # grep -Ev '^(DROP|CREATE) ROLE( IF EXISTS)* postgres;' backup_<LABEL>_globals_<DATE>.sql | sudo -u postgres psql --no-psqlrc --echo-errors
@@ -324,13 +371,13 @@ EOF
 
 10. Agendamento de backup:
 
-   **IMPORTANTE:** Caso tenha desativado o agendamento do backup no crontab, deve-se ativa-lo novamente:
+   **IMPORTANTE:** Caso tenha desativado o agendamento do backup no crontab, deve-se ativá-lo novamente:
 
    ```console
    # mv /etc/cron.d/pg_dump_gdrive{.disabled,}
    ```
 
-## Documentações de referência
+## Documentação de referência
 
 * https://www.postgresql.org/docs/current/app-pgdump.html
 * https://www.postgresql.org/docs/current/app-pg-dumpall.html
