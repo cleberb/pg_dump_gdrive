@@ -228,11 +228,11 @@ EOF
 
 ### Restauração completa de um backup
 
-1. Logar no servidor via ssh.
+1. Logar no servidor via ssh
 
-2. Caso seja um novo servidor, configure o script `pg_dump_gdrive`.
+2. Caso seja um novo servidor, configure o script `pg_dump_gdrive`
 
-3. Agendamento de backup:
+3. Agendamento de backup
 
    > **Warning**
    > Caso a base a ser restaurada seja muito grande, o agendamento de backup no crontab deve ser desativado, para que não seja processado backup durante a restauração.
@@ -241,19 +241,21 @@ EOF
    # mv /etc/cron.d/pg_dump_gdrive{,.disabled}
    ```
 
-4. Acessar o Google Drive via browser e ver os nomes completos ou a string de data que representa os arquivos que deseja realizar download para restaurar:
+4. Identificar arquivos a serem restaurados
+
+   Acessar o Google Drive via browser e ver os nomes completos ou a string de data que representa os arquivos que deseja realizar download para restaurar
 
    ```console
    # pg_dump_gdrive --config file.conf --download daily/*20220621162701*
    ```
 
-5. Acessar o diretório de processamento de backups definido para o script `pg_dump_gdrive`:
+5. Acessar o diretório de processamento de backups definido para o script `pg_dump_gdrive`
 
    ```console
    # cd <diretory>
    ```
 
-6. Restaurar os arquivos de configuração `postgresql.conf` e `pg_hba.conf`:
+6. Restaurar os arquivos de configuração `postgresql.conf` e `pg_hba.conf`
 
    ```console
    # tar xzvf backup_<LABEL>_configs_<DATE>.tar.gz
@@ -371,7 +373,7 @@ EOF
    # rm -f backup_*.{sql,dump}
    ```
 
-10. Agendamento de backup:
+10. Agendamento de backup
 
    > **Warning**
    > Caso tenha desativado o agendamento do backup no crontab, deve-se ativá-lo novamente.
