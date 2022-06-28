@@ -1,6 +1,6 @@
 # Backup PostgreSQL no Google Drive
 
-O objetivo desse script é realizar o backup lógico de instâncias PostgreSQL de forma ágil (via PIGZ) e segura, monitorando todo o processo e gerando alertas via e-mail.
+O objetivo desse script é realizar o backup lógico de instâncias PostgreSQL de forma ágil (via `pigz`), transferir os arquivos de backup para o Google Drive (via `rclone`), monitorar todo o processo e gerar alertas informativos por e-mail.
 
 1. Lógica do script no processamento e prioridade:
 
