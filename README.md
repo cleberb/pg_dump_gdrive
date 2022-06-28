@@ -209,7 +209,7 @@ PERCENT_CORES_PGDUMP=80
 PERCENT_CORES_PIGZ=80
 ```
 
-### Configuração do crontab
+### Agendamento de Backup
 
 O script de backup deverá ser executado todos os dias, ajuste o **horário** e caminho do **arquivo de configuração** personalizado que será utilizado.
 
