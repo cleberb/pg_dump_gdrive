@@ -23,7 +23,7 @@ set -o pipefail
 # Esta propriedade possibilita a edição de variáveis da shell atual.
 shopt -s lastpipe
 
-# Variável responsável por listar diretórios de executaveis do sistema
+# Variável responsável por listar diretórios de executáveis do sistema
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 
 # Define linguagem padrão para utilização nos comandos utilizados pelo script
@@ -48,7 +48,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # Caminho absoluto do script
 SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_NAME"
 
-# Definir início de excução de script
+# Definir início de execução de script
 START_TIME=$(date +%s);
 
 # Variável utilizada no registro de info do sistema
@@ -107,11 +107,11 @@ MAIL_TARGET="root@localhost"
 # Comando para dar um flush na fila e enviar mensagens que estão agarradas no serviço de e-mail
 CMD_FLUSH_MAIL_QUEUE="$(command -v postqueue &> /dev/null && echo 'postqueue -f')"
 
-# Valor em porcetagem de uso de núcleos de processadores pelo pg_dump
+# Valor em porcentagem de uso de núcleos de processadores pelo pg_dump
 # IMPORTANTE: Não acrescentar string "%", apenas valores inteiros.
 PERCENT_CORES_PGDUMP=80
 
-# Valor em porcetagem de uso de núcleos de processadores pelo compactador PIGZ
+# Valor em porcentagem de uso de núcleos de processadores pelo compactador PIGZ
 # IMPORTANTE: Não acrescentar string "%", apenas valores inteiros.
 PERCENT_CORES_PIGZ=80
 
@@ -145,11 +145,11 @@ function _exit(){
 
   case $signal in
     SIGINT)
-      # SIGINT: Interromper processo ao precionar Ctrl-C no teclado.
+      # SIGINT: Interromper processo ao pressionar Ctrl-C no teclado.
       error "--> ALERT: Processo recebeu sinal SIGINT(Ctrl-C) e será interrompido."
     ;;
     SIGQUIT)
-      # SIGQUIT: Finalizar processo ao precionar Ctrl-\ no teclado.
+      # SIGQUIT: Finalizar processo ao pressionar Ctrl-\ no teclado.
       error "--> ALERT: Processo recebeu sinal SIGQUIT(Ctrl-\\) e será finalizado."
     ;;
     SIGTERM)
