@@ -617,7 +617,7 @@ function backup_exec(){
       local dump_file="${BACKUP_DIR}/backup_${BACKUP_LABEL}_${base}_${LOG_TIME}.dump.gz"
 
       # Compactar o diretório de backup
-      $SUDO -i -u postgres $PG_DUMP --format=custom --compress=0 --jobs=${NUM_CORES_PGDUMP} --dbname=${base} 2> ${DUMP_LOG} | $PIGZ --processes ${NUM_CORES_PIGZ} --stdout > "${dump_file}" 2> ${PIGZ_LOG}
+      $SUDO -i -u postgres $PG_DUMP --format=custom --compress=0 --dbname=${base} 2> ${DUMP_LOG} | $PIGZ --processes ${NUM_CORES_PIGZ} --stdout > "${dump_file}" 2> ${PIGZ_LOG}
 
       if [ "$?" != "0" ]; then
         error "    --> ERROR: falhas registradas ao processar backup:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' ${DUMP_LOG} ${PIGZ_LOG})"
