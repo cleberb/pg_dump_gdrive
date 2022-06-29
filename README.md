@@ -1,6 +1,6 @@
 # Backup PostgreSQL no Google Drive
 
- Script de backup lógico do PostgreSQL, responsável processar de forma ágil (via `pigz`), transferir e controlar a retenção dos arquivos (via `rclone`) em reposítorios do Google Drive, monitorar todo o processo e gerar alertas informativos por e-mail.
+ Script de backup lógico do PostgreSQL, responsável por processar de forma ágil (via `pigz`), transferir e controlar a retenção dos arquivos (via `rclone`) em reposítorios do Google Drive, monitorar todo o processo e gerar alertas informativos por e-mail.
 
 1. Lógica do script no processamento e prioridade:
 
@@ -226,7 +226,7 @@ HOME=/
 EOF
 ```
 
-### Restauração completa de um backup
+## Restauração completa de um backup
 
 1. Logar no servidor via ssh
 
@@ -375,12 +375,12 @@ EOF
 
 10. Agendamento de backup
 
-   > **Warning**
-   > Caso tenha desativado o agendamento do backup no crontab, deve-se ativá-lo novamente.
+    > **Warning**
+    > Caso tenha desativado o agendamento do backup no crontab, deve-se ativá-lo novamente.
 
-   ```console
-   # mv /etc/cron.d/pg_dump_gdrive{.disabled,}
-   ```
+    ```console
+    # mv /etc/cron.d/pg_dump_gdrive{.disabled,}
+    ```
 
 ## Documentação de referência
 
