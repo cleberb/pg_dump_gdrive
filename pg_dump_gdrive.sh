@@ -4,7 +4,6 @@
 # Informações do sistema
 ###############################################################################################################
 
-# Informações do sistema
 DESCRIPTION="Backup PostgreSQL Gdrive"
 DEVELOPER="Cleberson Batista"
 VERSION="1.0"
@@ -210,7 +209,8 @@ function die(){
 }
 
 function usage() {
-  error "Usage: $SCRIPT_NAME [ -c | --config <Path file configuration> ]"
+  error "Usage: $SCRIPT_NAME [ -c | --config <Path file configuration> ]
+                             [ -d | --download <Regex file name> ]"
   die 2
 }
 
@@ -300,7 +300,7 @@ function repeat_str(){
   seq -s "$string" $number | sed 's/[0-9]//g'
 }
 
-# Registrar info informativos
+# Registrar mensagens informativas
 function info(){
 
   local string="$*\n"
@@ -311,7 +311,7 @@ function info(){
 
 }
 
-# Registrar info de erros
+# Registrar mensagens de erros
 function error(){
 
   local string="$*\n"
