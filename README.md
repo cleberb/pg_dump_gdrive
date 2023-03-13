@@ -348,9 +348,12 @@ EOF
    > A opção `--dbname=postgres`, especificado no comando `pg_restore` abaixo, serve apenas para conectar inicialmente, posteriormente com a opção `--create`, o  irá criar e acessar a base do backup.
    > Mais detalhes do `pg_restore`: https://www.postgresql.org/docs/current/app-pgrestore.html
 
+   > **Note**
+   > Informe o caminho absoluto do arquivo dump, e certifique que o mesmo tem permissão de leitura para o usuário `postgres`.
+
    ```console
    # LOG="/tmp/PGRESTORE-<BASE>.log"
-   # sudo -i -u postgres pg_restore --format=custom --create --clean --if-exists --exit-on-error ${OPTIONS_PGRESTORE} --dbname=postgres backup_<LABEL>_<BASE>_<DATE>.dump &> $LOG &
+   # sudo -i -u postgres pg_restore --format=custom --create --clean --if-exists --exit-on-error ${OPTIONS_PGRESTORE} --dbname=postgres /<path>/backup_<LABEL>_<BASE>_<DATE>.dump &> $LOG &
    ```
 
    Para monitorar o processo (`ps_restore`) utilize alguma ferramenta de monitoramento de processos:
