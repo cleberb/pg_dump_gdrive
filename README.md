@@ -353,7 +353,7 @@ EOF
 
    ```console
    # LOG="/tmp/PGRESTORE-<BASE>.log"
-   # sudo -i -u postgres pg_restore --format=custom --create --clean --if-exists --exit-on-error ${OPTIONS_PGRESTORE} --dbname=postgres /<path>/backup_<LABEL>_<BASE>_<DATE>.dump &> $LOG &
+   # sudo -i -u postgres pg_restore --jobs=$(nproc) --format=custom --create --clean --if-exists --exit-on-error ${OPTIONS_PGRESTORE} --dbname=postgres /<path>/backup_<LABEL>_<BASE>_<DATE>.dump &> $LOG &
    ```
 
    Para monitorar o processo (`ps_restore`) utilize alguma ferramenta de monitoramento de processos:
