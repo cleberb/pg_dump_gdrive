@@ -246,7 +246,7 @@ EOF
    Acessar o Google Drive via browser e ver os nomes completos ou a string de data que representa os arquivos que deseja realizar download para restaurar
 
    ```console
-   # pg_dump_gdrive --config file.conf --download daily/*20220621162701*
+   # /etc/pg_dump_gdrive/pg_dump_gdrive.sh --config /etc/pg_dump_gdrive/<FILE>.conf --download weekly/*20230702*
    ```
 
 5. Acessar o diretório de processamento de backups definido para o script `pg_dump_gdrive`
@@ -374,6 +374,7 @@ EOF
 
    ```console
    # rm -f backup_*.{sql,dump}
+   # rm -rf etc
    ```
 
 10. Agendamento de backup
