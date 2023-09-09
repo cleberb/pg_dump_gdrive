@@ -118,9 +118,9 @@
 Instalar versão mais recente do `rclone`:
 
 ```console
-# wget https://downloads.rclone.org/v1.58.1/rclone-v1.58.1-linux-amd64.deb
-# dpkg -i rclone-v1.58.1-linux-amd64.deb
-# rm -rf rclone-v1.58.1-linux-amd64.deb
+# wget https://downloads.rclone.org/rclone-current-linux-amd64.deb
+# dpkg -i rclone-current-linux-amd64.deb
+# rm -rf rclone-current-linux-amd64.deb
 ```
 
 #### CentOS v8 / OracleLinux v8
@@ -399,3 +399,10 @@ EOF
 * https://stackoverflow.com/a/57659755
 * https://stackoverflow.com/a/16095742
 * https://stackoverflow.com/a/9468796
+
+# TO DO
+
+1) Criar variáveis de configuração para os parâmetros `--transfers` e `--drive-chunk-size`;
+2) Opção para descompactar arquivo de backup;
+3) Download de arquivos com permissão para `postgres`;
+4) Documentar problema com tablespace durante restore.

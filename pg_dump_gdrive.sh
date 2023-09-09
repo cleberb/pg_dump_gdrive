@@ -639,8 +639,11 @@ function backup_exec(){
   info "\n--> Excluindo arquivos de backups locais antigos."
   find ${BACKUP_DIR} -type f \( -name "backup_${BACKUP_LABEL}_*" -and ! -name "*_${LOG_TIME}*" \) -exec rm -f {} \;
 
+  local transfers=$(( $(nproc) / 2 ))
+  [ $transfers -lt 4 ] && transfers=4
+
   info "\n--> Enviando backups para o Gdrive."
-  $RCLONE copy "${BACKUP_DIR}" "$RCLONE_REMOTE_NAME":${backup_routine}/ --include "*.gz" --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
+  $RCLONE copy "${BACKUP_DIR}" "$RCLONE_REMOTE_NAME":${backup_routine}/ --include "*.gz" --transfers=$transfers --drive-chunk-size=128M --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
 
   if [ "$?" != "0" ] ; then
     error "    --> ERROR: falha no envio de backups para o Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
@@ -762,7 +765,10 @@ function backup_download(){
 
       info "    - $file"
 
-      $RCLONE copy "$RCLONE_REMOTE_NAME":"${file}" "${BACKUP_DIR}/" --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
+      local transfers=$(( $(nproc) / 2 ))
+      [ $transfers -lt 4 ] && transfers=4
+
+      $RCLONE copy "$RCLONE_REMOTE_NAME":"${file}" "${BACKUP_DIR}/" --transfers=$transfers --drive-chunk-size=128M --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
 
       if [ "$?" != "0" ] ; then
         error "      --> ERROR: falha no download de backups do Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
