@@ -162,7 +162,7 @@ function _exit(){
   esac
 
   # Remover configuração do rclone
-  [ -e "$RCLONE" ] && [ "$RCLONE_REMOTE_NAME" ] && $RCLONE -q config delete $RCLONE_REMOTE_NAME &> /dev/null
+  [ -e "$RCLONE" ] && [ "$RCLONE_GDRIVE" ] && $RCLONE -q config delete $RCLONE_GDRIVE &> /dev/null
 
   # Excluir arquivo de log do rclone
   [ -e "$RCLONE_LOG" ] && rm -f $RCLONE_LOG
@@ -256,17 +256,33 @@ function set_valid_config(){
 
   # Nome da conexão remota utilizada pelo rclone
   # OBS: Nome aleatório para não entrar em conflito com eventuais configurações já existentes
-  RCLONE_REMOTE_NAME="GDRIVEBKPPG${RANDOM}"
+  RCLONE_GDRIVE="GDRIVEBKPPG${RANDOM}"
 
   # Configurações do rclone para o google drive
   # Mais detalhes em:
   #   - https://rclone.org/docs/#config-file
   #   - https://rclone.org/drive/
-  declare -g -x RCLONE_CONFIG_${RCLONE_REMOTE_NAME^^}_TYPE='drive'
-  declare -g -x RCLONE_CONFIG_${RCLONE_REMOTE_NAME^^}_SCOPE='drive'
-  declare -g -x RCLONE_CONFIG_${RCLONE_REMOTE_NAME^^}_TOKEN=$RCLONE_TOKEN
-  declare -g -x RCLONE_CONFIG_${RCLONE_REMOTE_NAME^^}_ROOT_FOLDER_ID=$RCLONE_ROOT_FOLDER_ID
-  declare -g -x RCLONE_CONFIG_${RCLONE_REMOTE_NAME^^}_TEAM_DRIVE=$RCLONE_TEAM_DRIVE
+  declare -g -x RCLONE_CONFIG_${RCLONE_GDRIVE^^}_TYPE=drive
+  declare -g -x RCLONE_CONFIG_${RCLONE_GDRIVE^^}_SCOPE=drive
+  declare -g -x RCLONE_CONFIG_${RCLONE_GDRIVE^^}_TOKEN=$RCLONE_TOKEN
+  declare -g -x RCLONE_CONFIG_${RCLONE_GDRIVE^^}_ROOT_FOLDER_ID=$RCLONE_ROOT_FOLDER_ID
+  declare -g -x RCLONE_CONFIG_${RCLONE_GDRIVE^^}_TEAM_DRIVE=$RCLONE_TEAM_DRIVE
+
+  # Nome da conexão remota utilizada pelo rclone
+  # OBS: Nome aleatório para não entrar em conflito com eventuais configurações já existentes
+  RCLONE_S3="S3BKPPG${RANDOM}"
+
+  # Configurações do rclone para o google drive
+  # Mais detalhes em:
+  #   - https://rclone.org/docs/#config-file
+  #   - https://rclone.org/drive/
+  declare -g -x RCLONE_CONFIG_${RCLONE_S3^^}_TYPE=s3
+  declare -g -x RCLONE_CONFIG_${RCLONE_S3^^}_PROVIDER=$RCLONE_S3_PROVIDER
+  declare -g -x RCLONE_CONFIG_${RCLONE_S3^^}_ENV_AUTH=$RCLONE_S3_ENV_AUTH
+  declare -g -x RCLONE_CONFIG_${RCLONE_S3^^}_ACCESS_KEY_ID=$RCLONE_S3_ACCESS_KEY_ID
+  declare -g -x RCLONE_CONFIG_${RCLONE_S3^^}_SECRET_ACCESS_KEY=$RCLONE_S3_SECRET_ACCESS_KEY
+  declare -g -x RCLONE_CONFIG_${RCLONE_S3^^}_ENDPOINT=$RCLONE_S3_ENDPOINT
+  declare -g -x RCLONE_CONFIG_${RCLONE_S3^^}_REGION=$RCLONE_S3_REGION
 
   # Calcular porcentagem de processadores utilizados pelo PIGZ
   NUM_CORES_PIGZ=$(( $(nproc) * PERCENT_CORES_PIGZ / 100))
@@ -307,7 +323,7 @@ function info(){
 
   LOG_MESSAGE+="${string}"
 
-  echo -ne "$string" | tee >(sed '/^$/d' | logger --priority daemon.info --tag ${SCRIPT_PATH}[$$])
+  echo -ne "$string" | tee >(logger --skip-empty --priority daemon.info --tag ${SCRIPT_PATH}[$$])
 
 }
 
@@ -320,7 +336,7 @@ function error(){
 
   STATUS="ERROR"
 
-  echo -ne "$string" | tee >(sed '/^$/d' | logger --priority daemon.err --tag ${SCRIPT_PATH}[$$]) >&2
+  echo -ne "$string" | tee >(logger --skip-empty --priority daemon.err --tag ${SCRIPT_PATH}[$$]) >&2
 
 }
 
@@ -643,7 +659,7 @@ function backup_exec(){
   [ $transfers -lt 4 ] && transfers=4
 
   info "\n--> Enviando backups para o Gdrive."
-  $RCLONE copy "${BACKUP_DIR}" "$RCLONE_REMOTE_NAME":${backup_routine}/ --include "*.gz" --transfers=$transfers --drive-chunk-size=128M --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
+  $RCLONE copy "${BACKUP_DIR}" "$RCLONE_GDRIVE":${backup_routine}/ --include "*.gz" --transfers=$transfers --drive-chunk-size=128M --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
 
   if [ "$?" != "0" ] ; then
     error "    --> ERROR: falha no envio de backups para o Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
@@ -683,7 +699,7 @@ function backup_exec(){
   echo '' > $RCLONE_LOG
 
   local files=""
-  files=$($RCLONE lsf  --format "tp" --files-only "$RCLONE_REMOTE_NAME":${backup_routine}/ --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG | sort -r | awk -F';' '{print $2}')
+  files=$($RCLONE lsf  --format "tp" --files-only "$RCLONE_GDRIVE":${backup_routine}/ --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG | sort -r | awk -F';' '{print $2}')
 
   if [ "$?" != "0" ] ; then
     error "    --> ERROR: falha ao listar arquivos do Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
@@ -713,7 +729,7 @@ function backup_exec(){
       echo '' > $RCLONE_LOG
 
       local result=""
-      result=$($RCLONE delete "$RCLONE_REMOTE_NAME":"${backup_routine}/$file" --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG)
+      result=$($RCLONE delete "$RCLONE_GDRIVE":"${backup_routine}/$file" --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG)
 
       if [ "$?" != "0" ] ; then
         error "    --> ERROR: falha ao excluir arquivo \"$file\" do Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
@@ -749,7 +765,7 @@ function backup_download(){
 
   info "\n--> Download de backups do Gdrive em "${BACKUP_DIR}/"."
   local files=""
-  files=$($RCLONE lsf --recursive --format "tp" --files-only "$RCLONE_REMOTE_NAME": --include "${DOWNLOAD}" --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG | sort -r | awk -F';' '{print $2}')
+  files=$($RCLONE lsf --recursive --format "tp" --files-only "$RCLONE_GDRIVE": --include "${DOWNLOAD}" --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG | sort -r | awk -F';' '{print $2}')
 
   if [ "$?" != "0" ] ; then
     error "    --> ERROR: falha ao listar arquivos do Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
@@ -768,7 +784,7 @@ function backup_download(){
       local transfers=$(( $(nproc) / 2 ))
       [ $transfers -lt 4 ] && transfers=4
 
-      $RCLONE copy "$RCLONE_REMOTE_NAME":"${file}" "${BACKUP_DIR}/" --transfers=$transfers --drive-chunk-size=128M --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
+      $RCLONE copy "$RCLONE_GDRIVE":"${file}" "${BACKUP_DIR}/" --transfers=$transfers --drive-chunk-size=128M --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
 
       if [ "$?" != "0" ] ; then
         error "      --> ERROR: falha no download de backups do Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
