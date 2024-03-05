@@ -6,7 +6,7 @@
 
 DESCRIPTION="Backup PostgreSQL Gdrive"
 DEVELOPER="Cleberson Batista"
-VERSION="1.0"
+VERSION="1.1"
 COMPANY="Cleberson Batista"
 COMPANY_SITE="https://www.linkedin.com/in/cleberson-batista/"
 
