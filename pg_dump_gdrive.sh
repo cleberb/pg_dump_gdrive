@@ -765,10 +765,7 @@ function backup_download(){
 
       info "    - $file"
 
-      local transfers=$(( $(nproc) / 2 ))
-      [ $transfers -lt 4 ] && transfers=4
-
-      $RCLONE copy "$RCLONE_REMOTE_NAME":"${file}" "${BACKUP_DIR}/" --transfers=$transfers --drive-chunk-size=128M --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
+      $RCLONE copy "$RCLONE_REMOTE_NAME":"${file}" "${BACKUP_DIR}/" --drive-upload-cutoff 1000T --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG --stats-unit=bits
 
       if [ "$?" != "0" ] ; then
         error "      --> ERROR: falha no download de backups do Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
