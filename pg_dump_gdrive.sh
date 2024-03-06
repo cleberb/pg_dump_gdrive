@@ -6,7 +6,7 @@
 
 DESCRIPTION="Backup PostgreSQL Gdrive"
 DEVELOPER="Cleberson Batista"
-VERSION="1.1"
+VERSION="1.2"
 COMPANY="Cleberson Batista"
 COMPANY_SITE="https://www.linkedin.com/in/cleberson-batista/"
 
@@ -383,6 +383,7 @@ function header(){
     echo -e "| Endereço(s) IP(s):£$(echo -e "$IP_LIST" | sed -e '1!s/^/| £/g')"
     echo -e "| Uptime do sistema:£$(uptime_print)"
     echo -e "| Diretório de processamento:£$BACKUP_DIR"
+    echo -e "| Diretório de backup GDRIVE:£$RCLONE_ROOT_FOLDER_ID"
     echo -e "| Tipo de dump:£$BACKUP_DUMP_TYPE"
     echo -e "| Retenção:£$STRING_RETENTION"
     echo -e "| Percentual de CPU's (PIGZ):£$PERCENT_CORES_PIGZ %"
@@ -657,7 +658,7 @@ function backup_exec(){
           )"
   fi
 
-  info "\n\n--> Excluindo backups antigos do Gdrive."
+  info "\n\n--> Deletando backups antigos do Gdrive:"
 
   local retention=0
 
@@ -680,7 +681,7 @@ function backup_exec(){
   echo '' > $RCLONE_LOG
 
   local files=""
-  files=$($RCLONE lsf  --format "tp" --files-only "$RCLONE_REMOTE_NAME":${backup_routine}/ --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG | sort -r | awk -F';' '{print $2}')
+  files=$($RCLONE lsf --format "tp" --files-only "$RCLONE_REMOTE_NAME":${backup_routine}/ --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG | sort -r | awk -F';' '{print $2}')
 
   if [ "$?" != "0" ] ; then
     error "    --> ERROR: falha ao listar arquivos do Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
@@ -710,12 +711,12 @@ function backup_exec(){
       echo '' > $RCLONE_LOG
 
       local result=""
-      result=$($RCLONE delete "$RCLONE_REMOTE_NAME":"${backup_routine}/$file" --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG)
+      result=$($RCLONE delete "$RCLONE_REMOTE_NAME":"${backup_routine}/${file}" --log-level $RCLONE_LOG_LEVEL --log-file $RCLONE_LOG)
 
-      if [ "$?" != "0" ] ; then
-        error "    --> ERROR: falha ao excluir arquivo \"$file\" do Gdrive:\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
-
-        exit 1
+      if [ "$?" == "0" ] ; then
+        info "    --> Deletado arquivo \"${backup_routine}/${file}\"."
+      else
+        error "    --> ERROR: falha ao deletar arquivo \"${backup_routine}/${file}\":\n$(sed 's/^/'"$(repeat_str ' ' 15)"'/g' $RCLONE_LOG)"
       fi
 
     done <<< "$files_to_delete"
