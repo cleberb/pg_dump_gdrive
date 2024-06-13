@@ -112,7 +112,7 @@
 #### Debian
 
 ```console
-# apt install sudo git sendemail pigz
+# apt install sudo sendemail pigz
 ```
 
 Instalar versão mais recente do `rclone`:
@@ -126,15 +126,18 @@ Instalar versão mais recente do `rclone`:
 #### CentOS v8 / OracleLinux v8
 
 ```console
-# dnf install sudo git sendemail pigz rclone
+# dnf install sudo sendemail pigz rclone
 ```
 
 ### Configurações
 
-Realizar o clone do projeto para o diretório **/etc**:
+Realizar o download do projeto para o diretório **/etc**:
 
 ```console
-# git -C /etc clone --depth 1 https://github.com/cleberb/pg_dump_gdrive.git
+# wget https://github.com/cleberb/pg_dump_gdrive/archive/refs/heads/main.zip
+# unzip main.zip
+# mv pg_dump_gdrive-main /etc/pg_dump_gdrive
+# rm -f main.zip
 ```
 
 Adequar as permissões do diretório e arquivos:
